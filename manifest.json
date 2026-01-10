@@ -1,0 +1,42 @@
+{
+	"manifest_version": 2.0,
+	"id": "cssandinfos",
+	"type": "module",
+	"name": "Custom CSS and Pages information",
+	"version": "7.0",
+	"namespace": "CSSandInfos",
+    "author": "Manuel Pesenti",
+	"description": "Zabbix frontend module for custom pages information and CSS.",
+	"actions": {
+		"module.pageinfo.list": {
+			"class": "PageInfoList",
+			"view": "pageinfo.list",
+			"layout": "layout.htmlpage"
+		},
+		"module.pageinfo.save": {
+			"class": "PageInfoSave",
+			"layout": "layout.htmlpage"
+		},
+		"module.pageinfo.delete": {
+			"class": "PageInfoDelete",
+			"layout": "layout.htmlpage"
+		},
+		"module.pagecss.list": {
+			"class": "PageCssList",
+			"view": "pagecss.list",
+			"layout": "layout.htmlpage"
+		},
+		"module.pagecss.save": {
+			"class": "PageCssSave",
+			"layout": "layout.htmlpage"
+		},
+		"module.pagecss.delete": {
+			"class": "PageCssDelete",
+			"layout": "layout.htmlpage"
+		}
+	},
+	"assets": {
+		"js": ["custom.js"],
+		"css": ["custom.css"]
+	}
+}

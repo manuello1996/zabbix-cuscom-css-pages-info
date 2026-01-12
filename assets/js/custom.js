@@ -1,54 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const DEFAULT_PAGE_INFO = [
 		{
-			pages: [
-				'mediatype.list',
-				'usergroup.list', 'userrole.list', 'user.list', 'token.list',
-				'authentication.edit', 'gui.edit', 'geomaps.edit',
-				'proxygroup.list', 'proxy.list', 'userrole.edit'
-			],
-			message: 'These settings are managed by Ansible and may be overwritten by automated processes. Changes made here may not persist.'
-		},
-		{
 			pages: ['dashboard.list'],
-			message: 'For the creation of new Dashboards follow this naming structure <br><b>Example: </b>FB / Name<br><i>LXP / Linux servers</i><br><i>NES / Fortigate Firewall</i><br><br>Elements that do not follow the naming structure will be removed without notifying users.'
+			message: 'This is an example of Hard-Coded message for the page <b>"dashboard.list".</b><br>The text can be stiled with tag like <b>bold</b>, <i>italic</i>, and others basic HTML.<br><br>Tis messae can be founrd in the file: <code>assets/js/custom.js</code> inside the modules files.' 
 		},
-		{
-			pages: ['hostgroup.list'],
-			message: 'General Host groups are managed by LXP Team.<br>Team Are allowed to create sub-Host groups via "Host group as admin" menu entry.<br><br>Elements that do not follow the naming structure will be removed without notifying users.<br><br>Other settings are managed by Ansible and may be overwritten by automated processes. Changes made here may not persist.'
-		},
-		{
-			pages: ['template.list', 'templategroup.list'],
-			message: 'For the creation of new Template follow this naming structure <br><b>Example: </b>FB - Name<br><i>LXP - Linux by Zabbix Agent</i><br><i>IA - Basis Monitoring</i><br><b>Assigne the template to the Template Group of your FB</b><br><br>Elements that do not follow the naming structure will be removed without notifying users.'
-		},
-		{
-			pages: ['module.motd.list'],
-			message: 'This module is managed by user with "Super admin role" role.'
-		},
-		{
-			pages: ['action.list&eventsource=*'],
-			message: 'For the creation of new Action follow this naming structure <br><b>Example: </b>Type - FB - Name<br><i>Trigger - LXP - production</i><br><i>Service - IA - SLA H24</i><br><br>Elements that do not follow the naming structure will be removed without notifying users.'
-		},
-		{
-			pages: ['service.list', 'sla.list'],
-			message: 'For the creation of new Services or SLA follow this naming structure <br><b>Example: </b>FB - Service - Name | tag: FB<br><i>LXP - CyberArk - PSMP | tag: lxp</i><br><i>IA - SOS | tag: ia</i><br><br>Elements that do not follow the naming structure will be removed without notifying users.'
-		},
-		{
-			pages: ['discovery.list'],
-			message: 'For the creation of new Discovery follow this naming structure <br><b>Example: </b>FB - DeviceType - Name<br><i>NES - Firewall - FortinetBE</i><br><i>NEB - Router - G1MO</i><br><b>MIN interval 1h</b><br>Elements that do not follow the naming structure will be removed without notifying users.'
-		},
-		{
-			pages: ['maintenance.list'],
-			message: 'For the creation of new Maintenance follow this naming structure <br><b>Example: </b>FB - Action - User<br><i>NEB - Firmwareupgrade UPFE - prv-xyz</i><br><i>LXP - SLES 15 upgrade SP6 - prv-xyz</i>'
-		},
-		{
-			pages: ['macros.edit'],
-			message: 'For the creation of new Macro follow this naming structure <br><b>Example: </b>FB_APPLICATION_OR_DEVICE_DETAIL<br><i>LXP_EIP_SNMP_AUTH_PRIV_PASSPHRASE</i><br><br><b>Use TYPE "Secret text" for passwords</b><br><br>Elements that do not follow the naming structure will be removed without notifying users.'
-		},
-		{
-			pages: ['userprofile.edit'],
-			message: '<b>Auto-login</b> and <b>Auto-logout</b> settings are centrally managed and forced to all user. Changes made here may not persist.'
-		}
 	];
 
 	const url = new URL(window.location.href);

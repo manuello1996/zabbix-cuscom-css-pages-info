@@ -14,6 +14,7 @@ Both tools store their data as global macros, so no DB schema changes are needed
 - Page informations UI under Administration.
 - Custom CSS UI under Administration.
 - Messages are matched by page action patterns.
+- Per-message color and icon selection.
 - Custom CSS is minified, split across multiple macros, and injected at runtime.
 - Readable CSS view in the admin screen (de-minified).
 
@@ -29,6 +30,7 @@ Both tools store their data as global macros, so no DB schema changes are needed
 
 ## Page informations
 This feature shows a notice box below the page title when the current `action` matches a pattern.
+Each message can use its own color and icon.
 
 ### Pattern format
 The pattern matches the `action` parameter in the URL and can include optional query keys.
@@ -41,8 +43,8 @@ Examples:
 
 ### Storage
 Each entry is stored as a global macro:
-- `{$PAGEINFO:<pattern>}`
-Macro value is the HTML message.
+- `{$PAGEINFO:<pattern>|<id>}`
+Macro value is JSON: `{"message":"<html>","color":"RRGGBB","icon":"EA30"}`.
 
 The module reads these macros and injects the message after the page title.
 

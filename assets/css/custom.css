@@ -1,0 +1,38 @@
+body output.restricted-box::before {
+  content: var(--motd-icon, "\ea30");
+}
+
+body output.restricted-box .msg-details {
+  display: flex;
+  justify-content: space-between;
+}
+
+.restricted-box .msg-details .list-dashed {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.msg-details > ul {
+  max-width: 80%;
+}
+
+.restricted-box .restricted-box-details > span {
+  margin-right: 0.25rem;
+}
+
+.restricted-box .restricted-box-details > * {
+  margin-right: 2rem;
+}
+
+output.restricted-box {
+  border-color: var(--motd-color-primary, #ecd200);
+}
+
+output.restricted-box .restricted-box-details span {
+  color: var(--motd-color-primary, #ecd200);
+}
+
+.msg-details i {
+  font-style: italic;
+}

@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const DEFAULT_PAGE_INFO = [
 		{
 			pages: ['dashboard.list'],
-			message: 'This is an example of Hard-Coded message for the page <b>"dashboard.list".</b><br>The text can be stiled with tag like <b>bold</b>, <i>italic</i>, and others basic HTML.<br><br>Tis messae can be founrd in the file: <code>assets/js/custom.js</code> inside the modules files.' 
+			message: 'This is an example of Hard-Coded message for the page <b>"dashboard.list".</b><br>The text can be stiled with tag like <b>bold</b>, <i>italic</i>, and others basic HTML.<br><br>Tis messae can be founrd in the file: <code>assets/js/custom.js</code> inside the modules files.',
+			color: '',
+			icon: ''
 		},
 	];
 
@@ -73,7 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
 			return [];
 		}
 
-		const context = macroName.slice(prefix.length, -suffix.length).trim();
+		let context = macroName.slice(prefix.length, -suffix.length).trim();
+		if (!context) return [];
+
+		const delimiterIndex = context.indexOf('|');
+		if (delimiterIndex !== -1) {
+			context = context.slice(0, delimiterIndex).trim();
+		}
+
 		if (!context) return [];
 
 		return context.split(',').map(p => p.trim()).filter(Boolean);
@@ -115,6 +124,28 @@ document.addEventListener('DOMContentLoaded', () => {
 		return response.json();
 	}
 
+	function parseMacroValue(rawValue) {
+		if (typeof rawValue !== 'string' || rawValue === '') {
+			return { message: '', color: '', icon: '' };
+		}
+
+		try {
+			const parsed = JSON.parse(rawValue);
+			if (parsed && typeof parsed === 'object') {
+				return {
+					message: typeof parsed.message === 'string' ? parsed.message : rawValue,
+					color: typeof parsed.color === 'string' ? parsed.color : '',
+					icon: typeof parsed.icon === 'string' ? parsed.icon : ''
+				};
+			}
+		}
+		catch (error) {
+			// Fallback to plain message string.
+		}
+
+		return { message: rawValue, color: '', icon: '' };
+	}
+
 	async function loadMacroEntries() {
 		const response = await callApi('usermacro.get', {
 			globalmacro: true,
@@ -125,10 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		if (response && !response.error && Array.isArray(response.result) && response.result.length > 0) {
 			return response.result
-				.map(item => ({
-					pages: parseMacroPages(item.macro),
-					message: item.value || ''
-				}))
+				.map(item => {
+					const parsed = parseMacroValue(item.value || '');
+					return {
+						pages: parseMacroPages(item.macro),
+						message: parsed.message || '',
+						color: parsed.color || '',
+						icon: parsed.icon || ''
+					};
+				})
 				.filter(entry => entry.pages.length > 0 && entry.message !== '');
 		}
 
@@ -142,10 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 
 		return fallbackResponse.result
-			.map(item => ({
-				pages: parseMacroPages(item.macro),
-				message: item.value || ''
-			}))
+			.map(item => {
+				const parsed = parseMacroValue(item.value || '');
+				return {
+					pages: parseMacroPages(item.macro),
+					message: parsed.message || '',
+					color: parsed.color || '',
+					icon: parsed.icon || ''
+				};
+			})
 			.filter(entry => entry.pages.length > 0 && entry.message !== '');
 	}
 
@@ -202,15 +243,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		style.textContent = cssText;
 	}
 
-	function findMatch(entries) {
+	function findMatches(entries) {
+		const matches = [];
 		for (const entry of entries || []) {
 			for (const pattern of entry.pages || []) {
 				if (matchesPattern(pattern, params)) {
-					return { entry, pattern };
+					matches.push({ entry, pattern });
+					break;
 				}
 			}
 		}
-		return null;
+		return matches;
 	}
 
 	(async () => {
@@ -234,44 +277,59 @@ document.addEventListener('DOMContentLoaded', () => {
 		applyPageCss(cssText);
 
 		const entries = mergeEntries(DEFAULT_PAGE_INFO, macroEntries);
-		const matchEntry = findMatch(entries);
-		if (!matchEntry) return;
+		const matches = findMatches(entries);
+		if (!matches.length) return;
 
 		const headerTitle = document.querySelector('header.header-title, .header-title');
 		if (!headerTitle) return;
 
-		const existing = document.querySelector('.restricted-box');
-		if (existing) return;
+		const fragment = document.createDocumentFragment();
 
-		const { entry, pattern } = matchEntry;
+		for (const match of matches) {
+			const { entry, pattern } = match;
 
-	// --- injection UI ---
-	const output = document.createElement('output');
-	output.setAttribute('role', 'contentinfo');
-	output.classList.add('restricted-box');
-	output.dataset.pageInfoPattern = pattern;
+			// --- injection UI ---
+			const output = document.createElement('output');
+			output.setAttribute('role', 'contentinfo');
+			output.classList.add('restricted-box');
+			output.dataset.pageInfoPattern = pattern;
 
-	const msgDetails = document.createElement('div');
-	msgDetails.classList.add('msg-details');
+			if (entry.color) {
+				const normalized = entry.color.startsWith('#') ? entry.color : `#${entry.color}`;
+				output.style.setProperty('--motd-color-primary', normalized);
+			}
 
-	const ulList = document.createElement('ul');
-	ulList.classList.add('list-dashed');
+			if (entry.icon) {
+				const iconValue = entry.icon.replace(/^#/, '');
+				if (iconValue) {
+					output.style.setProperty('--motd-icon', `"\\${iconValue}"`);
+				}
+			}
 
-	const li = document.createElement('li');
-	li.innerHTML = entry.message;
+			const msgDetails = document.createElement('div');
+			msgDetails.classList.add('msg-details');
 
-	ulList.appendChild(li);
-	msgDetails.appendChild(ulList);
+			const ulList = document.createElement('ul');
+			ulList.classList.add('list-dashed');
 
-	output.appendChild(msgDetails);
+			const li = document.createElement('li');
+			li.innerHTML = entry.message;
 
-	const closeButton = document.createElement('button');
-	closeButton.classList.add('btn-overlay-close');
-	closeButton.setAttribute('type', 'button');
-	closeButton.setAttribute('title', 'Close');
-	closeButton.addEventListener('click', () => output.remove());
-	output.appendChild(closeButton);
+			ulList.appendChild(li);
+			msgDetails.appendChild(ulList);
 
-	headerTitle.insertAdjacentElement('afterend', output);
+			output.appendChild(msgDetails);
+
+			const closeButton = document.createElement('button');
+			closeButton.classList.add('btn-overlay-close');
+			closeButton.setAttribute('type', 'button');
+			closeButton.setAttribute('title', 'Close');
+			closeButton.addEventListener('click', () => output.remove());
+			output.appendChild(closeButton);
+
+			fragment.appendChild(output);
+		}
+
+		headerTitle.after(fragment);
 	})();
 });
